@@ -42,18 +42,20 @@ jobs:
           protocol: ftps
           port: 21
           local-dir: ./landing/dist/
-          server-dir: ./mimmycare.com/
-          # Root already holds api/, .htaccess and .config — exclude them or the
-          # root mirror would DELETE them (they aren't in landing/dist).
+          # FTP user's home IS the docroot (/home/devgeereact/mimmycare.com),
+          # so server-dir must be ./ — NOT ./mimmycare.com/ (that doubled the path).
+          server-dir: ./
+          # Docroot already holds api.php, config.php, htaccess (no dot) — exclude
+          # them and app/ or the root mirror would DELETE them (absent from landing/dist).
           exclude: |
             **/.git*
             **/.git*/**
             **/node_modules/**
             app/**
-            api/**
+            api.php
+            config.php
+            htaccess
             .htaccess
-            .config
-            .config/**
 
       # App → mimmycare.com/app/ (isolated subdir, base '/app/' set in vite).
       - name: Deploy app → /app/
@@ -65,7 +67,7 @@ jobs:
           protocol: ftps
           port: 21
           local-dir: ./app/dist/
-          server-dir: ./mimmycare.com/app/
+          server-dir: ./app/
           exclude: |
             **/.git*
             **/.git*/**
