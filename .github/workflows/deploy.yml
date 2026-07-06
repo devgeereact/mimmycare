@@ -43,12 +43,17 @@ jobs:
           port: 21
           local-dir: ./landing/dist/
           server-dir: ./mimmycare.com/
+          # Root already holds api/, .htaccess and .config — exclude them or the
+          # root mirror would DELETE them (they aren't in landing/dist).
           exclude: |
             **/.git*
             **/.git*/**
             **/node_modules/**
             app/**
             api/**
+            .htaccess
+            .config
+            .config/**
 
       # App → mimmycare.com/app/ (isolated subdir, base '/app/' set in vite).
       - name: Deploy app → /app/
