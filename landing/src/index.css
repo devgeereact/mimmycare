@@ -1,1 +1,39 @@
 @import "tailwindcss";
+
+@theme {
+  --font-sans: "Hanken Grotesk", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-serif: "Playfair Display", ui-serif, Georgia, "Times New Roman", serif;
+}
+
+/* Tropical gradient — the guaranteed-beautiful fallback that sits behind the
+   hero photo, so the page never renders as a broken/empty box. Drop a
+   landing/public/assets/hero.jpg (or hero.mp4) to override the imagery. */
+.hero-fallback {
+  background:
+    radial-gradient(120% 90% at 50% 8%, #7fc7d9 0%, #3d8fa6 34%, #1f5c72 68%, #123a4a 100%);
+}
+
+/* Slow cinematic zoom on the hero media */
+@keyframes kenburns {
+  0%   { transform: scale(1.06) translateY(0); }
+  100% { transform: scale(1.16) translateY(-1.2%); }
+}
+.animate-kenburns { animation: kenburns 26s ease-out forwards; }
+
+/* Contact card entrance */
+@keyframes cardin {
+  from { opacity: 0; transform: translateY(12px) scale(.97); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* Staggered rise-in for hero content */
+@keyframes fadeup {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.fadeup { opacity: 0; animation: fadeup .9s ease-out forwards; }
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-kenburns { animation: none; }
+  .fadeup { opacity: 1; animation: none; }
+}
