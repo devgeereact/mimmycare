@@ -11,8 +11,8 @@
 
 | Surface | Stack | Local port | cPanel dir |
 |---------|-------|-----------|-----------|
-| landing | Vite/React/TS/Tailwind v4 | 5041 | `mimmycare.com/` |
-| app     | Vite/React/TS/Tailwind v4 | 5042 | `mimmycare.com/app/` |
+| landing | Vite/React/TS/Tailwind v4 | 5091 | `mimmycare.com/` |
+| app     | Vite/React/TS/Tailwind v4 | 5092 | `mimmycare.com/app/` |
 | api     | PHP/MySQL | 8041 | `mimmycare.com/api/` |
 
 ## Deploy

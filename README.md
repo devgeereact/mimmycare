@@ -6,8 +6,8 @@ Client **NN 04**. Standalone repo. Three surfaces: landing, app, api.
 
 | Surface | Stack | Local port | Deploy dir (cPanel) |
 |---------|-------|-----------|---------------------|
-| landing | Vite / React / TS / Tailwind v4 | 5041 | `mimmycare.com/` (root) |
-| app     | Vite / React / TS / Tailwind v4 | 5042 | `mimmycare.com/app/` |
+| landing | Vite / React / TS / Tailwind v4 | 5091 | `mimmycare.com/` (root) |
+| app     | Vite / React / TS / Tailwind v4 | 5092 | `mimmycare.com/app/` |
 | api     | PHP / MySQL | 8041 | `mimmycare.com/api/` (manual) |
 
 - Host: cPanel `premium152` (`devgeereact`) → https://mimmycare.com
@@ -18,8 +18,8 @@ Client **NN 04**. Standalone repo. Three surfaces: landing, app, api.
 
 ```bash
 npm install          # installs landing + app (npm workspaces)
-npm run dev:landing  # http://localhost:5041
-npm run dev:app      # http://localhost:5042
+npm run dev:landing  # http://localhost:5091
+npm run dev:app      # http://localhost:5092
 npm run build        # builds both
 ```
 

@@ -2,7 +2,7 @@
   "name": "mimmycare",
   "private": true,
   "version": "0.0.0",
-  "description": "MimmyCare — landing + app + api (client NN 04)",
+  "description": "MimmyCare — landing + app + api (client NN 09)",
   "workspaces": [
     "landing",
     "app"
