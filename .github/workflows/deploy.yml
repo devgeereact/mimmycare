@@ -46,12 +46,13 @@ jobs:
           # so server-dir must be ./ — NOT ./mimmycare.com/ (that doubled the path).
           server-dir: ./
           # Docroot already holds api.php, config.php, htaccess (no dot) — exclude
-          # them and app/ or the root mirror would DELETE them (absent from landing/dist).
+          # them, app/ and api/ or the root mirror would DELETE them (absent from landing/dist).
           exclude: |
             **/.git*
             **/.git*/**
             **/node_modules/**
             app/**
+            api/**
             api.php
             config.php
             htaccess

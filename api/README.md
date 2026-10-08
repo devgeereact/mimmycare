@@ -1,7 +1,19 @@
 # MimmyCare API (PHP/MySQL)
 
 **Port (local dev):** 8041
-**Deploy target:** `/home/devgeereact/mimmycare.com/api/` (cPanel, premium152)
+**Deploy target:** not confirmed (cPanel, premium152). See "Where the API lives" below.
+
+## Where the API lives (owner to confirm)
+
+- The API source is **not in this repository**. Only this README and
+  `config.example.php` are tracked under `api/`.
+- `.github/workflows/deploy.yml` states that the docroot
+  (`/home/devgeereact/mimmycare.com`) already holds `api.php`, `config.php`
+  and `htaccess` at its root, and excludes them from the landing sync.
+- This README previously named `/home/devgeereact/mimmycare.com/api/` as the
+  deploy target. The workflow now excludes both the root files and `api/**`.
+- Which location production actually serves, and where the API source is
+  maintained, must be confirmed by the owner. Update this section once known.
 
 ## Deployment — MANUAL (option A)
 
