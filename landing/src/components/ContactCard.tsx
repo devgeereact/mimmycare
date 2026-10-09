@@ -9,17 +9,44 @@ export default function ContactCard({ open, onClose }: Props) {
   const [from, setFrom] = useState('')
   const [message, setMessage] = useState('')
   const firstFieldRef = useRef<HTMLInputElement>(null)
+  const dialogRef = useRef<HTMLDivElement>(null)
 
-  // Close on Escape, lock body scroll, focus first field when opened.
+  // Close on Escape, keep Tab / Shift+Tab inside the dialog, lock body scroll,
+  // focus first field when opened and return focus to the opener on close.
   useEffect(() => {
     if (!open) return
-    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && onClose()
+    const opener = document.activeElement instanceof HTMLElement ? document.activeElement : null
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onClose()
+        return
+      }
+      if (e.key !== 'Tab' || !dialogRef.current) return
+      const items = Array.from(
+        dialogRef.current.querySelectorAll<HTMLElement>(
+          'button, [href], input, textarea, select, [tabindex]:not([tabindex="-1"])',
+        ),
+      ).filter((el) => !el.hasAttribute('disabled'))
+      if (items.length === 0) return
+      const first = items[0]
+      const last = items[items.length - 1]
+      const active = document.activeElement
+      const inside = active instanceof Node && dialogRef.current.contains(active)
+      if (e.shiftKey && (active === first || !inside)) {
+        e.preventDefault()
+        last.focus()
+      } else if (!e.shiftKey && (active === last || !inside)) {
+        e.preventDefault()
+        first.focus()
+      }
+    }
     document.addEventListener('keydown', onKey)
     document.body.style.overflow = 'hidden'
     firstFieldRef.current?.focus()
     return () => {
       document.removeEventListener('keydown', onKey)
       document.body.style.overflow = ''
+      if (opener?.isConnected) opener.focus()
     }
   }, [open, onClose])
 
@@ -38,6 +65,7 @@ export default function ContactCard({ open, onClose }: Props) {
 
   return (
     <div
+      ref={dialogRef}
       className="fixed inset-0 z-50 flex items-center justify-center p-4"
       role="dialog"
       aria-modal="true"
@@ -79,6 +107,7 @@ export default function ContactCard({ open, onClose }: Props) {
             <input
               ref={firstFieldRef}
               type="text"
+              aria-label="Your name"
               placeholder="Your name"
               value={name}
               onChange={(e) => setName(e.target.value)}
@@ -87,12 +116,14 @@ export default function ContactCard({ open, onClose }: Props) {
             <input
               type="email"
               required
+              aria-label="Your email"
               placeholder="Your email"
               value={from}
               onChange={(e) => setFrom(e.target.value)}
               className="w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-slate-900 focus:ring-2 focus:ring-slate-900/10"
             />
             <textarea
+              aria-label="Your message"
               placeholder="How can we help?"
               rows={4}
               value={message}

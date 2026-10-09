@@ -6,6 +6,9 @@
 alongside `index.html`. (cPanel **premium17**, UK datacenter — migrated from
 premium152/US on 2026-07-21.)
 
+The API source is **not in this repository**. Only this README and
+`config.example.php` are tracked under `api/`.
+
 ## Deployment — MANUAL (option A)
 
 This API is **NOT** part of the GitHub Actions FTP auto-deploy. The workflow

@@ -1,6 +1,6 @@
 # mimmycare Agent Contract
 
-This existing project adopts the active shared GEE OS, minimum version 0.5.0. Read `.agent/PROJECT.yml` and `.agent/CURRENT-TASK.md`, then apply the constitution, loop and routing rules at `~/.agents/gee-os`.
+This existing project adopts the active shared GEE OS, minimum version 0.9.0. Read `.agent/PROJECT.yml` and `.agent/CURRENT-TASK.md`, then apply the constitution, loop and routing rules at `~/.agents/gee-os`.
 
 ## Read order
 
@@ -9,6 +9,15 @@ This existing project adopts the active shared GEE OS, minimum version 0.5.0. Re
 3. `.agent/CURRENT-TASK.md`, current scope and evidence.
 4. `CLAUDE.md`, preserved project knowledge pending modularisation.
 5. `README.md` and the relevant files under `docs/`.
+
+## Commands
+
+- Install: `npm ci` (npm workspaces `landing` and `app`)
+- Develop: `npm run dev:landing` (port 5091) or `npm run dev:app` (port 5092, base `/app/`)
+- Build: `npm run build` (runs `tsc -b && vite build` in each workspace)
+- Type check: `npx tsc --noEmit -p landing/tsconfig.json` and `-p app/tsconfig.json`
+- Lint and test: none configured
+- API: PHP source is not version-controlled here (see `api/README.md`)
 
 ## Shared rules
 
