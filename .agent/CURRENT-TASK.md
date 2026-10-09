@@ -33,3 +33,9 @@ Adopt GEE OS 0.5.0 locally without replacing existing project knowledge or chang
 ## Completion
 
 The local project discovers the shared GEE OS, all original project files remain intact, and remaining modularisation work is recorded honestly.
+
+## 8 October 2026: owner-authorised launcher correction
+
+The current owner request supersedes the earlier documentation-only scope for this focused fix. Added the nested npm argument separator to dev:app and dev:landing, preserving ports and workspace setup. Updated README with loopback commands and the app's /app/ URL.
+
+PASS: both exact root commands with -- --host 127.0.0.1 launch successfully and return HTTP 200 for HTML and transformed src/main.tsx. PASS: npm run build for both workspaces. No lint/unit scripts are defined. Local API/database account flows remain NOT TESTED. Test processes stopped; no account, environment or production changes.

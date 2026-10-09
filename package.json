@@ -8,8 +8,8 @@
     "app"
   ],
   "scripts": {
-    "dev:landing": "npm run dev --workspace landing",
-    "dev:app": "npm run dev --workspace app",
+    "dev:landing": "npm run dev --workspace landing --",
+    "dev:app": "npm run dev --workspace app --",
     "build:landing": "npm run build --workspace landing",
     "build:app": "npm run build --workspace app",
     "build": "npm run build:landing && npm run build:app"
