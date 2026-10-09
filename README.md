@@ -23,6 +23,15 @@ npm run dev:app      # http://localhost:5092
 npm run build        # builds both
 ```
 
+To bind the development sites to this computer only, run each command in its own terminal:
+
+```bash
+npm run dev:landing -- --host 127.0.0.1  # http://127.0.0.1:5091/
+npm run dev:app -- --host 127.0.0.1      # http://127.0.0.1:5092/app/
+```
+
+The root scripts forward flags through the workspace npm command to Vite. Account features still require the separate local PHP API and database.
+
 Ports are pinned (`strictPort`) — a clash fails loud instead of drifting.
 
 ## Deploy
