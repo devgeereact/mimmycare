@@ -12,6 +12,9 @@
     "dev:app": "npm run dev --workspace app --",
     "build:landing": "npm run build --workspace landing",
     "build:app": "npm run build --workspace app",
-    "build": "npm run build:landing && npm run build:app"
+    "build": "npm run build:landing && npm run build:app",
+    "dev:api": "php -S 127.0.0.1:8041 api/index.php",
+    "test": "npm test --workspace app && php api/tests/run.php",
+    "release": "node scripts/release.mjs"
   }
 }

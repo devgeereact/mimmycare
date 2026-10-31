@@ -1,0 +1,56 @@
+{
+  "host": "cpanel",
+  "project": "mimmycare",
+  "url": "https://mimmycare.com",
+  "checks": [
+    "cd app && npx --no-install tsc -b && npm test",
+    "cd landing && npx --no-install tsc -b",
+    "for f in $(find api -name '*.php'); do php -l \"$f\" >/dev/null || exit 1; done",
+    "php api/tests/run.php"
+  ],
+  "build": "cd landing && npx --no-install vite build --base=/ && cd ../app && VITE_CLERK_PUBLISHABLE_KEY=pk_live_Y2xlcmsubWltbXljYXJlLmNvbSQ npx --no-install vite build --base=/app/ && grep -qF 'RewriteRule . /app/index.html' dist/.htaccess",
+  "parts": [
+    {
+      "from": "landing/dist",
+      "to": "mimmycare.com",
+      "allow": [
+        ".htaccess"
+      ]
+    },
+    {
+      "from": "app/dist",
+      "to": "mimmycare.com/app",
+      "allow": [
+        ".htaccess"
+      ]
+    },
+    {
+      "from": "api",
+      "to": "mimmycare.com/api",
+      "exclude": [
+        "/tests/",
+        "/config.sample.php",
+        "*.md"
+      ],
+      "allow": [
+        ".htaccess",
+        "*.sql"
+      ]
+    }
+  ],
+  "smoke": [
+    {
+      "path": "/",
+      "status": 200
+    },
+    {
+      "path": "/app/",
+      "status": 200
+    },
+    {
+      "path": "/api/health",
+      "status": 200,
+      "contains": "\"ok\":true"
+    }
+  ]
+}

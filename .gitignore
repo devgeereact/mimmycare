@@ -50,3 +50,9 @@ Thumbs.db
 .vscode/
 *.swp
 *~
+
+# ============================================================
+#  Local test / state (kit rule): throwaway DBs, caches, recovery copies
+# ============================================================
+.local-test/
+.local-state/

@@ -1,75 +1,52 @@
-name: Deploy to cPanel (FTPS)
-
-# Deploys landing + app only. API is deployed manually (see api/README.md)
-# so CI can never overwrite server-side config.php / .htaccess / DB creds.
+# Deploy on every push to main: the same `scripts/release.mjs --go` as on the Mac, over SSH (no FTP).
+# Checks and build run first; any failure stops before upload. A failed smoke test restores the
+# previous files automatically (snapshot in ~/backups/mimmycare/releases on the server).
+# Docs-only pushes do not deploy. A commit message with [skip ci] does not deploy.
+# Secrets (set by ~/Backups/scripts/setup-github-deploy.zsh --apply mimmycare): CPANEL_SSH_KEY, CPANEL_KNOWN_HOSTS.
+name: Deploy
 
 on:
   push:
     branches: [main]
+    paths-ignore: ["docs/**", "**/*.md", ".agent/**"]
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 concurrency:
-  group: deploy-${{ github.ref }}
-  cancel-in-progress: true
+  group: deploy
+  cancel-in-progress: false
 
 jobs:
-  build-deploy:
+  deploy:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'npm'
-
+          node-version: 24
+          cache: npm
+          cache-dependency-path: package-lock.json
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.4"
+          coverage: none
       - name: Install
-        run: npm ci
-
-      - name: Build landing + app
-        run: npm run build
-
-      # Landing → site root. Mirrors mimmycare.com/, so EXCLUDE app/ and api/
-      # or the sync would delete those server subfolders.
-      - name: Deploy landing → root
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
-        with:
-          server: ${{ secrets.FTP_SERVER }}
-          username: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
-          protocol: ftps
-          port: 21
-          local-dir: ./landing/dist/
-          # FTP user's home IS the docroot (/home/devgeereact/mimmycare.com),
-          # so server-dir must be ./ — NOT ./mimmycare.com/ (that doubled the path).
-          server-dir: ./
-          # Docroot already holds api.php, config.php, htaccess (no dot) — exclude
-          # them, app/ and api/ or the root mirror would DELETE them (absent from landing/dist).
-          exclude: |
-            **/.git*
-            **/.git*/**
-            **/node_modules/**
-            app/**
-            api/**
-            api.php
-            config.php
-            htaccess
-            .htaccess
-
-      # App → mimmycare.com/app/ (isolated subdir, base '/app/' set in vite).
-      - name: Deploy app → /app/
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
-        with:
-          server: ${{ secrets.FTP_SERVER }}
-          username: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
-          protocol: ftps
-          port: 21
-          local-dir: ./app/dist/
-          server-dir: ./app/
-          exclude: |
-            **/.git*
-            **/.git*/**
-            **/node_modules/**
+        run: npm ci --no-audit --no-fund
+      - name: SSH to cPanel
+        env:
+          CPANEL_SSH_KEY: ${{ secrets.CPANEL_SSH_KEY }}
+          CPANEL_KNOWN_HOSTS: ${{ secrets.CPANEL_KNOWN_HOSTS }}
+        run: |
+          test -n "$CPANEL_SSH_KEY" || { echo "CPANEL_SSH_KEY is not set: run setup-github-deploy.zsh --apply mimmycare"; exit 1; }
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$CPANEL_SSH_KEY" > ~/.ssh/deploy_key && chmod 600 ~/.ssh/deploy_key
+          printf '%s\n' "$CPANEL_KNOWN_HOSTS" > ~/.ssh/known_hosts
+          printf 'Host cpanel\n  HostName premium17.web-hosting.com\n  Port 21098\n  User devgeereact\n  IdentityFile ~/.ssh/deploy_key\n  IdentitiesOnly yes\n  StrictHostKeyChecking yes\n' > ~/.ssh/config
+      - name: Release
+        run: node scripts/release.mjs --go
+      - name: Remove the key
+        if: always()
+        run: rm -f ~/.ssh/deploy_key
