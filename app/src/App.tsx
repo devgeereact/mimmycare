@@ -1,10 +1,23 @@
+import { ClerkLoaded, ClerkLoading, SignedIn, SignedOut } from '@clerk/clerk-react'
+import Home from './components/Home.tsx'
+import Shell from './components/Shell.tsx'
+import SignInView from './components/SignInView.tsx'
+
+/** Signed out: Clerk sign-in (email code, Google). Signed in: the home screen, backed by GET /api/me. */
 export default function App() {
   return (
-    <main className="min-h-screen flex items-center justify-center bg-slate-950 text-slate-100">
-      <div className="text-center">
-        <h1 className="text-5xl font-bold tracking-tight">MimmyCare App</h1>
-        <p className="mt-4 text-slate-400">App — scaffold ready.</p>
-      </div>
-    </main>
+    <Shell>
+      <ClerkLoading>
+        <p role="status" className="text-slate-400">Loading…</p>
+      </ClerkLoading>
+      <ClerkLoaded>
+        <SignedOut>
+          <SignInView />
+        </SignedOut>
+        <SignedIn>
+          <Home />
+        </SignedIn>
+      </ClerkLoaded>
+    </Shell>
   )
 }

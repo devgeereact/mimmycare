@@ -104,9 +104,14 @@ export default function App() {
       {/* Footer */}
       <footer className="absolute inset-x-0 bottom-0 z-10 flex flex-col items-center gap-1 px-6 pb-6 text-center text-xs text-white/60 sm:flex-row sm:justify-between">
         <span>© {new Date().getFullYear()} MimmyCare. All rights reserved.</span>
-        <a href="mailto:info@mimmycare.com" className="transition hover:text-white">
-          info@mimmycare.com
-        </a>
+        <span className="flex items-center gap-4">
+          <a href="mailto:info@mimmycare.com" className="transition hover:text-white">
+            info@mimmycare.com
+          </a>
+          <a href="/app/" className="font-semibold text-white/80 transition hover:text-white">
+            Sign in
+          </a>
+        </span>
       </footer>
 
       <ContactCard open={contactOpen} onClose={() => setContactOpen(false)} />

@@ -1,0 +1,28 @@
+# MimmyCare app (mimmycare.com/app/): SPA history fallback and security headers.
+# Built into app/dist by Vite (public/) and deployed by release.json (app part allows .htaccess).
+# This folder's rewrite rules replace the site root's, so the root's Cloudflare origin lock is repeated here.
+
+<IfModule mod_headers.c>
+  # The shell must always revalidate, so a release reaches people straight away; hashed /app/assets/* stay cached.
+  <FilesMatch "^index\.html$">
+    Header set Cache-Control "no-cache, must-revalidate"
+  </FilesMatch>
+  # Clerk sign-in needs its Frontend API (script + calls), Clerk avatars and the Cloudflare Turnstile bot check.
+  Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' https://clerk.mimmycare.com https://challenges.cloudflare.com; connect-src 'self' https://clerk.mimmycare.com; img-src 'self' data: https://img.clerk.com; style-src 'self' 'unsafe-inline'; font-src 'self' data:; frame-src 'self' https://challenges.cloudflare.com; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'"
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+</IfModule>
+
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /app/
+
+  # Cloudflare origin lock (same as the site root .htaccess): direct-to-origin hits have no CF-RAY header.
+  RewriteCond %{HTTP:CF-RAY} ^$
+  RewriteRule ^ - [F,L]
+
+  RewriteRule ^index\.html$ - [L]
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteRule . /app/index.html [L]
+</IfModule>
