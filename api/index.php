@@ -8,12 +8,12 @@
  *                     first sign-in, refreshes it afterwards, returns {"user":{...}}.
  *
  * Errors: {"error":{"code":"...","message":"..."}} (+ "ref" on 500, matching a line in error_log).
- * Stack: PHP 8.4, PDO MariaDB, no Composer. Settings: lib/config.php.
+ * Stack: PHP 8.4, PDO MariaDB, no Composer. Settings: lib/settings.php.
  */
 declare(strict_types=1);
 
 require __DIR__ . "/lib/http.php";
-require __DIR__ . "/lib/config.php";
+require __DIR__ . "/lib/settings.php";
 require __DIR__ . "/lib/db.php";
 require __DIR__ . "/lib/rate_limit.php";
 require __DIR__ . "/lib/auth.php";

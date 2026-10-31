@@ -10,7 +10,7 @@
 declare(strict_types=1);
 
 require_once __DIR__ . "/../lib/http.php";
-require_once __DIR__ . "/../lib/config.php";
+require_once __DIR__ . "/../lib/settings.php";
 require_once __DIR__ . "/../lib/db.php";
 require_once __DIR__ . "/../lib/auth.php";
 require_once __DIR__ . "/../lib/migrations.php";

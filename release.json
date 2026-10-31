@@ -3,6 +3,7 @@
   "project": "mimmycare",
   "url": "https://mimmycare.com",
   "checks": [
+    "if find api landing/src app/src -name config.php | grep -q .; then echo 'A file named config.php is never uploaded by the release script: rename it'; exit 1; fi",
     "cd app && npx --no-install tsc -b && npm test",
     "cd landing && npx --no-install tsc -b",
     "for f in $(find api -name '*.php'); do php -l \"$f\" >/dev/null || exit 1; done",

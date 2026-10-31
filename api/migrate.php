@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 if (PHP_SAPI !== "cli") { http_response_code(404); exit; }
 
-require __DIR__ . "/lib/config.php";
+require __DIR__ . "/lib/settings.php";
 require __DIR__ . "/lib/db.php";
 require __DIR__ . "/lib/migrations.php";
 

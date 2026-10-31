@@ -23,7 +23,7 @@ Rate limits (`rate_hits` table): 20 failed token checks per IP per 10 minutes, t
 |---|---|
 | `index.php` | front controller: headers, CORS (listed origins only), routes, JSON errors |
 | `lib/http.php` | JSON responses, error shape, route parsing, bearer parsing, client IP |
-| `lib/config.php` | loads `api/config.php` (or `MIMMYCARE_API_CONFIG`), validates keys without printing values |
+| `lib/settings.php` | loads `api/config.php` (or `MIMMYCARE_API_CONFIG`), validates keys without printing values |
 | `lib/db.php` | PDO (utf8mb4, exceptions, real prepares, UTC session) |
 | `lib/auth.php`, `lib/clerk_jwt.php` | Clerk verification, claims to profile, user upsert |
 | `lib/rate_limit.php` | sliding-window counter |
