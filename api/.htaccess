@@ -1,0 +1,36 @@
+# MimmyCare API: everything goes to the front controller (index.php).
+# Deployed by release.json (api part allows .htaccess). This folder's rewrite rules replace the site root's,
+# so the root's Cloudflare origin lock is repeated here.
+
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+
+  # Cloudflare origin lock (same as the site root .htaccess): direct-to-origin hits have no CF-RAY header.
+  RewriteCond %{HTTP:CF-RAY} ^$
+  RewriteRule ^ - [F,L]
+
+  # Keep the Authorization header (some CGI/FastCGI setups strip it).
+  RewriteCond %{HTTP:Authorization} .
+  RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+
+  # Internals are never web-served: libraries, migrations, tests, CLI scripts, settings.
+  RewriteRule ^(lib|migrations|tests)(/|$) - [F,L]
+  RewriteRule ^(migrate|config|config\.sample)\.php$ - [F,L]
+
+  # Everything else that is not a real file goes to index.php (so /api/health, /api/me resolve).
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteRule ^ index.php [QSA,L]
+  RewriteRule ^$ index.php [QSA,L]
+</IfModule>
+
+# Second layer, in case mod_rewrite is off: deny SQL, docs and every PHP file except the entry point.
+<FilesMatch "\.(sql|md|json|log)$">
+  Require all denied
+</FilesMatch>
+<FilesMatch "\.php$">
+  Require all denied
+</FilesMatch>
+<Files "index.php">
+  Require all granted
+</Files>
