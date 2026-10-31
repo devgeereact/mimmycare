@@ -4,33 +4,30 @@
 
 **Client NN:** 04
 **Repo:** devgeereact/mimmycare (private) — standalone
-**Host:** cPanel **premium17** (UK, `185.61.152.45`) / user `devgeereact` → https://mimmycare.com
-**DB:** `devgeereact_mimmycare`
+**Host:** cPanel **premium17** (UK) / user `devgeereact` → https://mimmycare.com (behind Cloudflare)
+**DB:** `devgeereact_mimmycare` (MariaDB 11.4)
 
-> Migrated US → UK datacenter 2026-07-21 (was premium152). `ssh cpanel` is
-> **disabled** on the new server — key auth works, login shell does not. Use
-> `lftp sftp://cpanel` or cPanel File Manager; `rsync` won't work.
+> Migrated US → UK datacenter 2026-07-21 (was premium152). `ssh cpanel` works (key auth, checked 30 Oct 2026).
+> Server access from the Mac is read-only (logs, checks, backups); changes go through Git and the release.
 
 ## Surfaces & ports (pinned, strictPort)
 
-| Surface | Stack | Local port | cPanel dir |
-|---------|-------|-----------|-----------|
-| landing | Vite/React/TS/Tailwind v4 | 5091 | `mimmycare.com/` |
-| app     | Vite/React/TS/Tailwind v4 | 5092 | `mimmycare.com/app/` |
-| api     | PHP/MySQL | 8041 | `mimmycare.com/` (root — `api.php`, **no** `api/` dir) |
+| Surface | Stack | Local port | Server folder |
+|---------|-------|-----------|---------------|
+| landing | Vite/React/TS/Tailwind v4 | 5091 | `~/mimmycare.com/` |
+| app     | Vite/React/TS/Tailwind v4, Clerk | 5092 | `~/mimmycare.com/app/` |
+| api     | PHP 8.4, PDO MariaDB, Clerk JWT | 8041 | `~/mimmycare.com/api/` |
 
 ## Deploy
 
-- Push `main` → GitHub Actions FTPS deploy (`.github/workflows/deploy.yml`).
-- CI deploys **landing + app only**. API = manual (option A).
-- Secrets: `FTP_SERVER` / `FTP_USERNAME` / `FTP_PASSWORD`.
+- Push `main` → `.github/workflows/deploy.yml` → `node scripts/release.mjs --go` over SSH (same as EGO LIMITED, kit release). Settings `release.json`. By hand: `npm run release`.
+- Secrets: `CPANEL_SSH_KEY`, `CPANEL_KNOWN_HOSTS`. No FTP (the FTPS workflow was removed 30 Oct 2026).
+- Full procedure: `docs/DEPLOYMENT.md`. API: `docs/API.md`.
 
 ## Rules
 
-- Never commit `.env`, `api/config.php`, live `.htaccess`.
-- API endpoints already uploaded to cPanel by hand — do not let CI clobber.
-- `.htaccess` files are **server-side only** and easy to lose: the site root and
-  `app/` each need their own (SPA fallback, `RewriteBase /` and `/app/`). A
-  deploy that wipes them silently breaks every deep link. See `api/README.md`.
-- Check `FTP_SERVER` in GitHub Actions secrets still points at the UK host — a
-  stale `premium152` value fails deploys silently.
+- Never commit `.env*` (except `.env.example`), `api/config.php`, or secrets. Clerk publishable keys are public.
+- Real API settings: `~/private-config/mimmycare/config.php` (0600). `~/mimmycare.com/api/config.php` is a stub. Releases never upload `config.php`.
+- The site root `.htaccess` (Cloudflare origin lock + landing SPA fallback) is server-managed and never uploaded. `app/` and `api/` ship their own `.htaccess` from the repo (`app/public/.htaccess`, `api/.htaccess`); each repeats the origin lock because a subfolder's rewrite rules replace the root's.
+- Keep `/api` out of the SPA fallback. Schema changes: new numbered file in `api/migrations/`, never edit an applied one.
+- Docs live in `docs/` (only README, AGENTS, CLAUDE, CODEX at the root).

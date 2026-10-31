@@ -14,10 +14,12 @@ This existing project adopts the active shared GEE OS, minimum version 0.9.0. Re
 
 - Install: `npm ci` (npm workspaces `landing` and `app`)
 - Develop: `npm run dev:landing` (port 5091) or `npm run dev:app` (port 5092, base `/app/`)
+- API (local): `npm run dev:api` (port 8041, needs `api/config.php` from `api/config.sample.php`)
 - Build: `npm run build` (runs `tsc -b && vite build` in each workspace)
 - Type check: `npx tsc --noEmit -p landing/tsconfig.json` and `-p app/tsconfig.json`
-- Lint and test: none configured
-- API: PHP source is not version-controlled here (see `api/README.md`)
+- Test: `npm test` (Vitest in `app`, then `php api/tests/run.php`); lint: none configured
+- Release: `npm run release` (dry run) / `npm run release -- --go`; push to `main` runs the same in GitHub Actions. See `docs/DEPLOYMENT.md`
+- API: PHP source in `api/` (see `docs/API.md`)
 
 ## Shared rules
 

@@ -2,44 +2,30 @@
 
 ## Outcome
 
-Audit MimmyCare against the applicable GEE OS 0.9.0 standards and apply safe, reversible local improvements, preserving its purpose, working behaviour, data and existing work.
+MimmyCare set up like EGO LIMITED: push-to-deploy over SSH (`release.json`, `scripts/release.mjs`, `.github/workflows/deploy.yml`), a PHP 8.4 API on MariaDB (`GET /api/health`, `GET /api/me` with Clerk session-token verification, migrations, tests), Clerk sign-in in the app, settings outside the web root. Infrastructure only: no product features until there is a spec.
 
 ## Mode
 
-Existing Application. Workflow: Existing Application, with the Change Safety protocol for each edit.
+Existing Application, Change Safety. Owner-authorised (30 Oct 2026): local commits on `main`, no push; read-only server checks; no changes to the server, Clerk or GitHub settings.
 
-## Scope
+## Status (30 Oct 2026)
 
-- In scope: baseline inspection and checks, findings ranked P0 to P4, small local fixes to code, documentation and agent instructions, reports under `../reports/mimmycare/`.
-- Out of scope: deletions, dependency or runtime changes, database migrations, authentication, payment or business-rule changes, deployment, commits and pushes, production or external mutations.
+- DONE (local, evidence in `docs/AUDIT.md`): API, app sign-in, landing "Sign in" link, release settings, SSH workflow (FTPS workflow removed), docs, server script `~/Backups/scripts/mimmycare-server-setup.zsh` (written, not run).
+- NOT TESTED: everything live (see `docs/AUDIT.md`).
 
-## Authority
+## Open steps (in order)
 
-- Research: yes, read-only.
-- Create planning artefacts: yes, under `../reports/mimmycare/`.
-- Edit local files: safe, reversible changes only.
-- Use external services: no.
-- Change production: no.
-- MCP reads: documentation lookups only.
-- MCP mutations: no.
+1. Owner: review and push the local commits (all `[skip ci]`, so the push does not deploy).
+2. Owner: `~/Backups/scripts/mimmycare-server-setup.zsh` (preview), then `--apply` (retires the old `api.php`/`config.php`, writes `~/private-config/mimmycare/config.php` and the API stub, dumps the DB, applies migrations 001–002).
+3. Owner: `~/Backups/scripts/setup-github-deploy.zsh --apply mimmycare` (deploy key + `CPANEL_SSH_KEY`, `CPANEL_KNOWN_HOSTS`); delete the old `FTP_*` secrets and the FTP account.
+4. First release: `npm run release`, then `npm run release -- --go` (or a push without `[skip ci]`). Check `/api/health` shows `"db":true`; sign in at `/app/`.
+5. Optional: Clerk session claim `name` (`{{user.full_name}}`) so names are stored server-side; enable Google in Clerk if wanted.
+6. Owner review: `~/mimmycare.com/.ftp-deploy-sync-state.json` (publicly readable) and the stray `~/mimmycare.com/mimmycare.com/` copy.
 
-## Risk and dependencies
+## Evidence required to close
 
-- Risk level: production. Pushing `main` deploys the landing page by FTPS through `.github/workflows/deploy.yml`.
-- Affected areas: `landing/` launch page, `app/` scaffold, deploy workflow, project documentation. The PHP API source is not in this repository.
-- Required decisions: listed in `../reports/mimmycare/AUDIT-AND-POLISH-2026-10-08.md`.
-
-## Evidence
-
-- Required checks: `npm run build` (runs `tsc -b` per workspace), TypeScript checks per workspace, manual review of changed files.
-- Completion conditions: every change verified or marked NOT TESTED, project report and workspace summary updated, no unrelated work altered.
+Live smoke checks pass after the first release; a real sign-in creates a `users` row; `docs/AUDIT.md` updated with the live results.
 
 ## Previous task
 
-GEE OS 0.5.0 local adoption (wave 1) is complete. Its record is `docs/GEE-OS.md`.
-
-## 8 October 2026: owner-authorised launcher correction
-
-The current owner request supersedes the earlier documentation-only scope for this focused fix. Added the nested npm argument separator to dev:app and dev:landing, preserving ports and workspace setup. Updated README with loopback commands and the app's /app/ URL.
-
-PASS: both exact root commands with -- --host 127.0.0.1 launch successfully and return HTTP 200 for HTML and transformed src/main.tsx. PASS: npm run build for both workspaces. No lint/unit scripts are defined. Local API/database account flows remain NOT TESTED. Test processes stopped; no account, environment or production changes.
+8 October 2026: GEE OS 0.9.0 audit and launcher fix (records in `../reports/mimmycare/` and git history). GEE OS adoption record: `docs/GEE-OS.md`.
