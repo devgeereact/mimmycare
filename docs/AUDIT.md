@@ -44,3 +44,10 @@ Scope: set the project up like EGO LIMITED: push-to-deploy over SSH (kit `script
 - The JWT verifier is EGO LIMITED's own zero-dependency code (owner's instruction), not a maintained library as the kit rule says. Covered by the 20+ token tests.
 - `release.json` api part also allows `.htaccess` (beyond the brief), otherwise `api/.htaccess` would never reach the server and the `.sql` files it allows would be web-readable.
 - The rate-limit table is a migration (`002_rate_hits.sql`) instead of EGO LIMITED's lazy `CREATE TABLE`, so the runtime user needs no schema rights.
+
+## 31 Oct 2026: deploy on push
+
+- Live 31 Oct 2026: /api/health 200 db:true, /api/me 401 JSON without a token, /app/ serves the Clerk sign-in with the CSP header, old api.php and config.php retired to ~/backups/mimmycare/, migrations 001 and 002 applied (backup db-before-migrations-20261031T000253Z.sql). FTP login, its 3 GitHub secrets and the FTP leftovers removed (leftovers kept in ~/backups/mimmycare/ftp-leftovers-*). Clerk production verified (DNS, SSL, mail), Google with the owner's keys, session claims email and name.
+- Incident: the first release left out api/lib/config.php (the release script never uploads a file named config.php), health answered 500 and the release restored the old files. Fixed in ce6800b (renamed to lib/settings.php) plus a release check that refuses any file named config.php; migrations had not run because the setup script ran before the API existed, applied by the owner afterwards.
+- Repo made public 31 Oct 2026 after a full-history gitleaks scan (0 findings); Actions on; GitHub deploy run 41149017652 passed (nothing to upload).
+- Real sign-in in a browser: NOT TESTED yet (owner to try email code and Google at /app/).
